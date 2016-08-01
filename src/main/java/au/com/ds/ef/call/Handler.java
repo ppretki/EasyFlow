@@ -5,5 +5,6 @@ package au.com.ds.ef.call;
  * Date: 6/12/2013
  * Time: 11:16 AM
  */
-public interface Handler {
+public interface Handler
+{
 }

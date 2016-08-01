@@ -7,280 +7,515 @@ import au.com.ds.ef.call.StateHandler;
 import au.com.ds.ef.err.ExecutionError;
 import au.com.ds.ef.err.LogicViolationError;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.Executor;
 
 import static au.com.ds.ef.HandlerCollection.EventType;
 
-public class EasyFlow<C extends StatefulContext> {
-    public class DefaultErrorHandler implements ExecutionErrorHandler<StatefulContext> {
+/**
+ * Event processing occurs recursively in the following order:
+ * a) outbounds {@link Transition}s,
+ * b) {@link FallbackAction}s.
+ * c) parent {@link StateEnum} processing
+ * User: andrey
+ * Date: 3/12/2013
+ * Time: 9:52 PM
+ */
+public class EasyFlow<C extends StatefulContext>
+{
+    /**
+     *
+     */
+    public class DefaultErrorHandler implements ExecutionErrorHandler<StatefulContext>
+    {
         @Override
-        public void call(ExecutionError error, StatefulContext context) {
+        public void call(ExecutionError error, StatefulContext context)
+        {
             String msg = "Execution Error in StateHolder [" + error.getState() + "] ";
-            if (error.getEvent() != null) {
+            if (error.getEvent() != null)
+            {
                 msg += "on EventHolder [" + error.getEvent() + "] ";
             }
             msg += "with Context [" + error.getContext() + "] ";
-
-            Exception e = new Exception(msg, error);
-            log.error("Error", e);
+            System.out.println(msg);
         }
     }
 
+    /** */
     private StateEnum startState;
+    /** */
     private TransitionCollection transitions;
-
+    /** */
     private Executor executor;
-
-    private HandlerCollection handlers = new HandlerCollection();
-    private boolean trace = false;
-    private FlowLogger log = new FlowLoggerImpl();
-
-    protected EasyFlow(StateEnum startState) {
+    /** */
+    private final HandlerCollection handlers = new HandlerCollection();
+    /** */
+    private final HashMap<StateEnum, FallbackAction> actions = new HashMap<StateEnum, FallbackAction>();
+    protected EasyFlow(StateEnum startState)
+    {
         this.startState = startState;
         this.handlers.setHandler(HandlerCollection.EventType.ERROR, null, null, new DefaultErrorHandler());
     }
 
-    protected void processAllTransitions(boolean skipValidation) {
-        transitions = new TransitionCollection(Transition.consumeTransitions(), !skipValidation);
-    }
-
-    protected void setTransitions(Collection<Transition> collection, boolean skipValidation) {
+    protected void setTransitions(Collection<Transition> collection, final boolean skipValidation)
+    {
         transitions = new TransitionCollection(collection, !skipValidation);
     }
 
-    private void prepare() {
-        if (executor == null) {
+    /** */
+    private void prepare()
+    {
+        if (executor == null)
+        {
             executor = new AsyncExecutor();
         }
     }
 
-    public void start(final C context) {
+    public void start(final C context)
+    {
         start(false, context);
     }
 
-    public void start(boolean enterInitialState, final C context) {
+    public void start(boolean enterInitialState, final C context)
+    {
         prepare();
         context.setFlow(this);
-
-        if (context.getState() == null) {
+        if (context.getState() == null)
+        {
             setCurrentState(startState, false, context);
-        } else if (enterInitialState) {
+        }
+        else if (enterInitialState)
+        {
             setCurrentState(context.getState(), true, context);
         }
     }
 
-    protected void setCurrentState(final StateEnum state, final boolean enterInitialState, final C context) {
-        execute(new Runnable() {
+    protected void setCurrentState(final StateEnum state, final boolean enterInitialState, final C context)
+    {
+        execute(new Runnable()
+        {
             @Override
-            public void run() {
-                if (!enterInitialState) {
-                    StateEnum prevState = context.getState();
-                    if (prevState != null) {
+            public void run()
+            {
+                StateEnum prevState = context.getState();
+                if (!enterInitialState)
+                {
+                    if (prevState != null)
+                    {
                         leave(prevState, context);
+                        StateEnum parent = prevState;
+                        while ((parent = parent.getParent()) != null && state != parent && !state.isAncestor(parent))
+                        {
+                            deactivate(parent, context);
+                        }
                     }
                 }
-
+                if (!enterInitialState && prevState != null)
+                {
+                    final ArrayList<StateEnum> states = new ArrayList<StateEnum>();
+                    StateEnum parent = state;
+                    while ((parent = parent.getParent()) != null && !prevState.isAncestor(parent))
+                    {
+                        states.add(parent);
+                    }
+                    for (int i = states.size() - 1; i > -1; i--)
+                    {
+                        activate(states.get(i), context);
+                    }
+                }
                 context.setState(state);
                 enter(state, context);
             }
         }, context);
     }
 
-    protected void execute(Runnable task, final C context) {
-        if (!context.isTerminated()) {
+    protected void execute(final Runnable task, final C context)
+    {
+        if (!context.isTerminated())
+        {
             executor.execute(task);
         }
     }
 
-    public <C1 extends StatefulContext> EasyFlow<C1> whenEvent(EventEnum event, ContextHandler<C1> onEvent) {
+    public <C1 extends StatefulContext> EasyFlow<C1> setAction(final StateEnum state, final FallbackAction<C1> action)
+    {
+        if (state.getActionEvents() != null && state.getActionEvents().length > 0)
+        {
+            actions.put(state, new FallbackWrapperAction(action, state.getActionEvents()));
+        }
+        return (EasyFlow<C1>) this;
+    }
+
+    public <C1 extends StatefulContext> EasyFlow<C1> whenEvent(final EventEnum event, final StateEnum state, final ContextHandler<C1> onEvent)
+    {
+        handlers.setHandler(EventType.EVENT_TRIGGER, state, event, onEvent);
+        return (EasyFlow<C1>) this;
+    }
+
+    public <C1 extends StatefulContext> EasyFlow<C1> whenEvent(EventEnum event, ContextHandler<C1> onEvent)
+    {
         handlers.setHandler(EventType.EVENT_TRIGGER, null, event, onEvent);
         return (EasyFlow<C1>) this;
     }
 
-    public <C1 extends StatefulContext> EasyFlow<C1> whenEvent(EventHandler<C1> onEvent) {
+    public <C1 extends StatefulContext> EasyFlow<C1> whenEvent(EventHandler<C1> onEvent)
+    {
         handlers.setHandler(EventType.ANY_EVENT_TRIGGER, null, null, onEvent);
         return (EasyFlow<C1>) this;
     }
 
-    public <C1 extends StatefulContext> EasyFlow<C1> whenEnter(StateEnum state, ContextHandler<C1> onEnter) {
+
+    public <C1 extends StatefulContext> EasyFlow<C1> whenEnter(StateEnum state, ContextHandler<C1> onEnter)
+    {
         handlers.setHandler(EventType.STATE_ENTER, state, null, onEnter);
         return (EasyFlow<C1>) this;
     }
 
-    public <C1 extends StatefulContext> EasyFlow<C1> whenEnter(StateHandler<C1> onEnter) {
+    public <C1 extends StatefulContext> EasyFlow<C1> whenDeactivate(StateEnum state, ContextHandler<C1> onDeactivate)
+    {
+        handlers.setHandler(EventType.STATE_DEACTIVATE, state, null, onDeactivate);
+        return (EasyFlow<C1>) this;
+    }
+
+    public <C1 extends StatefulContext> EasyFlow<C1> whenActivate(StateEnum state, ContextHandler<C1> onActivate)
+    {
+        handlers.setHandler(EventType.STATE_ACTIVATE, state, null, onActivate);
+        return (EasyFlow<C1>) this;
+    }
+
+    public <C1 extends StatefulContext> EasyFlow<C1> whenEnter(StateHandler<C1> onEnter)
+    {
         handlers.setHandler(EventType.ANY_STATE_ENTER, null, null, onEnter);
         return (EasyFlow<C1>) this;
     }
 
-    public <C1 extends StatefulContext> EasyFlow<C1> whenLeave(StateEnum state, ContextHandler<C1> onEnter) {
+    public <C1 extends StatefulContext> EasyFlow<C1> whenLeave(StateEnum state, ContextHandler<C1> onEnter)
+    {
         handlers.setHandler(EventType.STATE_LEAVE, state, null, onEnter);
         return (EasyFlow<C1>) this;
     }
 
-    public <C1 extends StatefulContext> EasyFlow<C1> whenLeave(StateHandler<C1> onEnter) {
+    public <C1 extends StatefulContext> EasyFlow<C1> whenLeave(StateHandler<C1> onEnter)
+    {
         handlers.setHandler(EventType.ANY_STATE_LEAVE, null, null, onEnter);
         return (EasyFlow<C1>) this;
     }
 
-    public <C1 extends StatefulContext> EasyFlow<C1> whenError(ExecutionErrorHandler<C1> onError) {
+    public <C1 extends StatefulContext> EasyFlow<C1> whenError(ExecutionErrorHandler<C1> onError)
+    {
         handlers.setHandler(EventType.ERROR, null, null, onError);
         return (EasyFlow<C1>) this;
     }
 
-    public <C1 extends StatefulContext> EasyFlow<C1> whenFinalState(StateHandler<C1> onFinalState) {
+    public <C1 extends StatefulContext> EasyFlow<C1> whenFinalState(StateHandler<C1> onFinalState)
+    {
         handlers.setHandler(EventType.FINAL_STATE, null, null, onFinalState);
         return (EasyFlow<C1>) this;
     }
 
-    public void waitForCompletion(C context) {
-      context.awaitTermination();
+    public void waitForCompletion(C context)
+    {
+        context.awaitTermination();
     }
 
-    public <C1 extends StatefulContext> EasyFlow<C1> executor(Executor executor) {
+    public <C1 extends StatefulContext> EasyFlow<C1> executor(Executor executor)
+    {
         this.executor = executor;
         return (EasyFlow<C1>) this;
     }
 
-    public <C1 extends StatefulContext> EasyFlow<C1> trace() {
-        trace = true;
-        return (EasyFlow<C1>) this;
-    }
-
-    public <C1 extends StatefulContext> EasyFlow<C1> logger(FlowLogger log) {
-        this.log = log;
-        return (EasyFlow<C1>) this;
-    }
-
-    public boolean safeTrigger(final EventEnum event, final C context) {
-        try {
+    public boolean safeTrigger(final EventEnum event, final C context)
+    {
+        try
+        {
             return trigger(event, true, context);
-        } catch (LogicViolationError logicViolationError) {
+        }
+        catch (LogicViolationError logicViolationError)
+        {
             return false;
         }
     }
 
-    public void trigger(final EventEnum event, final C context) throws LogicViolationError {
-        trigger(event, false, context);
+    public boolean trigger(final EventEnum event, final C context) throws LogicViolationError
+    {
+        return trigger(event, false, context);
     }
 
-    public List<Transition> getAvailableTransitions(StateEnum stateFrom) {
+    public List<Transition> getAvailableTransitions(StateEnum stateFrom)
+    {
         return transitions.getTransitions(stateFrom);
     }
 
-    public boolean isEventHandledByState(final StateEnum state, final EventEnum event) {
-        for (Transition transition : transitions.getTransitions(state)) {
-            if (transition.getEvent() == event) return true;
+    public boolean isEventHandledByState(final StateEnum state, final EventEnum event)
+    {
+        for (Transition transition : transitions.getTransitions(state))
+        {
+            if (transition.getEvent() == event)
+            {
+                return true;
+            }
         }
         return false;
     }
-
-    private boolean trigger(final EventEnum event, final boolean safe, final C context) throws LogicViolationError {
-        if (context.isTerminated()) {
-            return false;
+    /**
+     * Test if state machine can handle the given event for the current context.
+     * @param event {@link EventEnum}
+     * @param context {@link C}
+     * @return
+     */
+    public boolean isEventHandled(final EventEnum event, final C context)
+    {
+        boolean eventHandled = false;
+        if (!context.isTerminated())
+        {
+            StateEnum state = context.getState();
+            Transition transition = null;
+            while (!eventHandled && state != null)
+            {
+                transition = transitions.getTransition(state, event);
+                if (transition == null)
+                {
+                    eventHandled = (actions.get(state) instanceof FallbackWrapperAction) && ((FallbackWrapperAction)actions.get(state)).isHandled(event);
+                    state = state.getParent();
+                }
+                else
+                {
+                    eventHandled = true;
+                }
+            }
         }
+        return eventHandled;
+    }
+    /**
+     * Null-safe action execution
+     * @param <E>
+     * @return
+     */
+    private boolean executeAction(final FallbackAction<C> action, final EventEnum event, final C context, final StateEnum state)
+    {
+        boolean consumed = false;
+        if (action != null)
+        {
+            try
+            {
+                consumed = action.call(context, event);
+            }
+            catch (Exception e)
+            {
+                doOnError(new ExecutionError(state, event, e, "Execution Error during action execution" + e.getMessage(), context));
+            }
+        }
+        return consumed;
+    }
 
-        final StateEnum stateFrom = context.getState();
-        final Transition transition = transitions.getTransition(stateFrom, event);
-
-        if (transition != null) {
-            execute(new Runnable() {
+    /**
+     * Null-safe transition processing
+     * @param transition
+     * @param event
+     * @param context
+     */
+    private void doTransition(final Transition transition, final EventEnum event, final C context)
+    {
+        if (transition != null)
+        {
+            execute(new Runnable()
+            {
                 @Override
-                public void run() {
-                    try {
-                        StateEnum stateTo = transition.getStateTo();
-                        if (isTrace())
-                            log.info("when triggered %s in %s for %s <<<", event, stateFrom, context);
-
+                public void run()
+                {
+                    final StateEnum stateFrom = transition.getStateFrom();
+                    final StateEnum stateTo = transition.getStateTo();
+                    try
+                    {
+                        context.setCurrentTransition(transition);
                         handlers.callOnEventTriggered(event, stateFrom, stateTo, context);
                         context.setLastEvent(event);
-
-                        if (isTrace())
-                            log.info("when triggered %s in %s for %s >>>", event, stateFrom, context);
-
                         setCurrentState(stateTo, false, context);
-                    } catch (Exception e) {
-                        doOnError(new ExecutionError(stateFrom, event, e,
-                            "Execution Error in [trigger]", context));
+                    }
+                    catch (Exception e)
+                    {
+                        doOnError(new ExecutionError(stateFrom, event, e, "Execution Error in [trigger]" + e.getMessage(), context));
                     }
                 }
             }, context);
-        } else if (!safe){
-            throw new LogicViolationError("Invalid Event: " + event +
-                " triggered while in State: " + context.getState() + " for " + context);
         }
-
-        return transition != null;
     }
-
-    private void enter(final StateEnum state, final C context) {
-        if (context.isTerminated()) {
+    /** */
+    private boolean trigger(final EventEnum event, final boolean safe, final C context) throws LogicViolationError
+    {
+        boolean eventConsumed = false;
+        final StateEnum stateFrom = context.getState();
+        if (!context.isTerminated())
+        {
+            StateEnum state = stateFrom;
+            Transition transition = null;
+            while (!eventConsumed && state != null)
+            {
+                transition = transitions.getTransition(state, event, true);
+                if (transition == null)
+                {
+                    eventConsumed = executeAction(actions.get(state), event, context, state);
+                    state = state.getParent();
+                }
+                else
+                {
+                    doTransition(transition, event, context);
+                    eventConsumed = true;
+                }
+            }
+        }
+        if (!eventConsumed)
+        {
+            if (safe)
+            {
+                throw new LogicViolationError("Invalid Event: " + event + " triggered while in state: " + stateFrom + " for " + context);
+            }
+        }
+        if (!eventConsumed && safe)
+        {
+            throw new LogicViolationError("Invalid Event: " + event + " triggered while in State: " + stateFrom + " for " + context);
+        }
+        return eventConsumed;
+    }
+    /**
+     * Invokes a handler which is registered for "onEnter" event
+     * @param state {@link StateEnum}
+     * @param context
+     */
+    public void invokeOnStateEnteredHandler(final StateEnum state, final C context)
+    {
+        if (state != null && context != null)
+        {
+            enter(state, context);
+        }
+    }
+    private void enter(final StateEnum state, final C context)
+    {
+        if (context.isTerminated())
+        {
             return;
         }
-
-        try {
-            // first enter state
-            if (isTrace())
-                log.info("when enter %s for %s <<<", state, context);
-
+        try
+        {
             handlers.callOnStateEntered(state, context);
-
-            if (isTrace())
-                log.info("when enter %s for %s >>>", state, context);
-
-            if (transitions.isFinal(state)) {
+            if (transitions.isFinal(state))
+            {
                 doOnTerminate(state, context);
             }
-        } catch (Exception e) {
-            doOnError(new ExecutionError(state, null, e,
-                "Execution Error in [whenEnter] handler", context));
+        }
+        catch (Exception e)
+        {
+            doOnError(new ExecutionError(state, null, e, "Execution Error in [whenEnter] handler", context));
         }
     }
 
-    private void leave(StateEnum state, final C context) {
-        if (context.isTerminated()) {
+    /** */
+    private void deactivate(final StateEnum state, final C context)
+    {
+        if (context.isTerminated())
+        {
             return;
         }
-
-        try {
-            if (isTrace())
-                log.info("when leave %s for %s <<<", state, context);
-
-            handlers.callOnStateLeaved(state, context);
-
-            if (isTrace())
-                log.info("when leave %s for %s >>>", state, context);
-        } catch (Exception e) {
-            doOnError(new ExecutionError(state, null, e,
-                "Execution Error in [whenLeave] handler", context));
+        try
+        {
+            handlers.callOnStateDeactivate(state, context);
+        }
+        catch (Exception e)
+        {
+            doOnError(new ExecutionError(state, null, e, "Execution Error in [whenLeave] handler", context));
         }
     }
 
-    protected boolean isTrace() {
-        return trace;
+    /** */
+    private void activate(final StateEnum state, final C context)
+    {
+        if (context.isTerminated())
+        {
+            return;
+        }
+        try
+        {
+            handlers.callOnStateActivate(state, context);
+        }
+        catch (Exception e)
+        {
+            doOnError(new ExecutionError(state, null, e, "Execution Error in [whenLeave] handler", context));
+        }
     }
 
-    protected void doOnError(final ExecutionError error) {
+    /** */
+    private void leave(StateEnum state, final C context)
+    {
+        if (context.isTerminated())
+        {
+            return;
+        }
+        try
+        {
+            handlers.callOnStateLeaved(state, context);
+        }
+        catch (Exception e)
+        {
+            doOnError(new ExecutionError(state, null, e, "Execution Error in [whenLeave] handler", context));
+        }
+    }
+
+    protected void doOnError(final ExecutionError error)
+    {
         handlers.callOnError(error);
         doOnTerminate(error.getState(), (C) error.getContext());
     }
 
-    protected StateEnum getStartState() {
+    protected StateEnum getStartState()
+    {
         return startState;
     }
 
-    protected void doOnTerminate(StateEnum state, final C context) {
-        if (!context.isTerminated()) {
-            try {
-                if (isTrace())
-                    log.info("terminating context %s", context);
-
+    protected void doOnTerminate(StateEnum state, final C context)
+    {
+        if (!context.isTerminated())
+        {
+            try
+            {
                 context.setTerminated();
                 handlers.callOnFinalState(state, context);
-            } catch (Exception e) {
-                log.error("Execution Error in [whenTerminate] handler", e);
             }
+            catch (Exception e)
+            {
+            }
+        }
+    }
+
+    private class FallbackWrapperAction<C1 extends StatefulContext> implements FallbackAction<C1>
+    {
+        /** */
+        private final FallbackAction<C1> action;
+        /** */
+        private final HashSet<EventEnum> events = new HashSet<EventEnum>();
+        /** */
+        private FallbackWrapperAction(final FallbackAction<C1> action, final EventEnum... events)
+        {
+            this.action = action;
+            this.events.addAll(Arrays.asList(events));
+        }
+
+        @Override
+        public boolean call(final C1 context, final EventEnum event) throws Exception
+        {
+            return isHandled(event) && action.call(context, event);
+        }
+        /**
+         *
+         * @return
+         */
+        private boolean isHandled(final EventEnum event)
+        {
+            return events.contains(event);
         }
     }
 }

@@ -5,6 +5,7 @@ package au.com.ds.ef;
  * Date: 3/12/2013
  * Time: 9:52 PM
  */
-public interface EventEnum {
+public interface EventEnum
+{
     String name();
 }

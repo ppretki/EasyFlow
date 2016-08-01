@@ -8,121 +8,166 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 @SuppressWarnings("rawtypes")
-public class StatefulContext implements Serializable {
-	private static final long serialVersionUID = 2324535129909715649L;
-	private static volatile long idCounter = 1;
-	
-	private final String id;
+public class StatefulContext implements Serializable
+{
+    private static final long serialVersionUID = 2324535129909715649L;
+    private static volatile long idCounter = 1;
+
+    private final String id;
     private EasyFlow flow;
-	private StateEnum state;
+    private StateEnum state;
     private EventEnum lastEvent;
-	private final AtomicBoolean terminated = new AtomicBoolean(false);
-	private final AtomicBoolean stopped = new AtomicBoolean(false);
-	private final CountDownLatch completionLatch = new CountDownLatch(1);
+    private Transition currentTransition;
+    private final AtomicBoolean terminated = new AtomicBoolean(false);
+    private final AtomicBoolean stopped = new AtomicBoolean(false);
+    private final CountDownLatch completionLatch = new CountDownLatch(1);
 
-	public StatefulContext() {
-		id = newId() + ":" + getClass().getSimpleName();
-	}
+    public StatefulContext()
+    {
+        id = newId() + ":" + getClass().getSimpleName();
+    }
 
-	public StatefulContext(String aId) {
-		id = aId + ":" + getClass().getSimpleName();
-	}
+    public StatefulContext(String aId)
+    {
+        id = aId + ":" + getClass().getSimpleName();
+    }
 
-	public String getId() {
-		return id;
-	}
-	
-	public void setState(StateEnum state){
-		this.state = state;
-	}
-	
-	public StateEnum getState() {
-		return state;
-	}
+    public String getId()
+    {
+        return id;
+    }
 
-	@Override
-	public int hashCode() {
-		return id.hashCode();
-	}
+    public void setState(StateEnum state)
+    {
+        this.state = state;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		StatefulContext other = (StatefulContext) obj;
-		if (id != other.id)
-			return false;
-		return true;
-	}
+    public StateEnum getState()
+    {
+        return state;
+    }
 
-    public void stop() {
+    @Override
+    public int hashCode()
+    {
+        return id.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        StatefulContext other = (StatefulContext) obj;
+        if (id != other.id)
+            return false;
+        return true;
+    }
+
+    public void stop()
+    {
         stopped.set(true);
         setTerminated();
     }
 
-    public boolean isStopped() {
+    public boolean isStopped()
+    {
         return stopped.get();
     }
 
-    public boolean safeTrigger(EventEnum event) {
+    public boolean safeTrigger(EventEnum event)
+    {
         return flow.safeTrigger(event, this);
     }
 
-    public void trigger(EventEnum event) throws LogicViolationError {
+    public void trigger(EventEnum event) throws LogicViolationError
+    {
         flow.trigger(event, this);
     }
 
-    protected void setFlow(EasyFlow<? extends StatefulContext> flow) {
+    protected void setFlow(EasyFlow<? extends StatefulContext> flow)
+    {
         this.flow = flow;
     }
-	
-	protected long newId() {
-		return idCounter++;
-	}
 
-    public boolean isTerminated() {
+    protected long newId()
+    {
+        return idCounter++;
+    }
+
+    public boolean isTerminated()
+    {
         return terminated.get();
     }
 
-    public boolean isRunning() {
+    public boolean isRunning()
+    {
         return isStarted() && !terminated.get();
     }
 
-    public boolean isStarted() {
+    public boolean isStarted()
+    {
         return state != null;
     }
 
-	protected void setTerminated() {
-		this.terminated.set(true);
-		this.completionLatch.countDown();
-	}
+    protected void setTerminated()
+    {
+        this.terminated.set(true);
+        this.completionLatch.countDown();
+    }
 
-    public EventEnum getLastEvent() {
+    public EventEnum getLastEvent()
+    {
         return lastEvent;
     }
 
-    void setLastEvent(EventEnum lastEvent) {
+    void setLastEvent(EventEnum lastEvent)
+    {
         this.lastEvent = lastEvent;
     }
 
-    public List<Transition> getAvailableTransitions() {
+    public List<Transition> getAvailableTransitions()
+    {
         return flow.getAvailableTransitions(state);
     }
 
-    protected void awaitTermination() {
-        try {
+    protected void awaitTermination()
+    {
+        try
+        {
             this.completionLatch.await();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+        }
+        catch (InterruptedException e)
+        {
+            Thread.interrupted();
         }
     }
 
+    /**
+     * 
+     * @return
+     */
+    public Transition getCurrentTransition()
+    {
+        return currentTransition;
+    }
+
+    /**
+     *
+     * @param currentTransition
+     */
+    public void setCurrentTransition(final Transition currentTransition)
+    {
+        this.currentTransition = currentTransition;
+    }
+
     @Override
-    public String toString() {
+    public String toString()
+    {
         return id;
     }
 }
