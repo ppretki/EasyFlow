@@ -18,7 +18,6 @@ public interface StateEnum
      * @return
      */
     StateEnum getParent();
-
     /**
      *
      * @param state

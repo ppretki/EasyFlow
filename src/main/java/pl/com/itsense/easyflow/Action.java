@@ -1,5 +1,7 @@
-package au.com.ds.ef;
+package pl.com.itsense.easyflow;
 
+import au.com.ds.ef.EventEnum;
+import au.com.ds.ef.StatefulContext;
 import au.com.ds.ef.call.Handler;
 
 /**
@@ -7,7 +9,7 @@ import au.com.ds.ef.call.Handler;
  * @author P.Pretki
  * @param <C>
  */
-public interface FallbackAction<C extends StatefulContext> extends Handler
+public interface Action<C extends StatefulContext> extends Handler
 {
     /**
      * @param context {@link StatefulContext}

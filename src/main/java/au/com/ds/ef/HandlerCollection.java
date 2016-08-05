@@ -15,19 +15,22 @@ import au.com.ds.ef.err.ExecutionError;
  * Date: 6/12/2013
  * Time: 11:03 AM
  */
-class HandlerCollection
+public class HandlerCollection
 {
-    public enum EventType
-    {
-        EVENT_TRIGGER, ANY_EVENT_TRIGGER, STATE_ENTER, ANY_STATE_ENTER, STATE_ACTIVATE, STATE_LEAVE, ANY_STATE_LEAVE, STATE_DEACTIVATE, FINAL_STATE, ERROR
-    }
-
     private static final class HandlerType
     {
+    	/** */
         EventType eventType;
+    	/** */
         EventEnum event;
+    	/** */
         StateEnum state;
-
+        /**
+         * 
+         * @param eventType
+         * @param event
+         * @param state
+         */
         private HandlerType(EventType eventType, EventEnum event, StateEnum state)
         {
             this.eventType = eventType;

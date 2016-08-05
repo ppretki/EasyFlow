@@ -6,6 +6,7 @@ import au.com.ds.ef.call.ExecutionErrorHandler;
 import au.com.ds.ef.call.StateHandler;
 import au.com.ds.ef.err.ExecutionError;
 import au.com.ds.ef.err.LogicViolationError;
+import pl.com.itsense.easyflow.Action;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,12 +16,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.Executor;
 
-import static au.com.ds.ef.HandlerCollection.EventType;
 
 /**
  * Event processing occurs recursively in the following order:
  * a) outbounds {@link Transition}s,
- * b) {@link FallbackAction}s.
+ * b) {@link Action}s.
  * c) parent {@link StateEnum} processing
  * User: andrey
  * Date: 3/12/2013
@@ -55,11 +55,11 @@ public class EasyFlow<C extends StatefulContext>
     /** */
     private final HandlerCollection handlers = new HandlerCollection();
     /** */
-    private final HashMap<StateEnum, FallbackAction> actions = new HashMap<StateEnum, FallbackAction>();
+    private final HashMap<StateEnum, Action> actions = new HashMap<StateEnum, Action>();
     protected EasyFlow(StateEnum startState)
     {
         this.startState = startState;
-        this.handlers.setHandler(HandlerCollection.EventType.ERROR, null, null, new DefaultErrorHandler());
+        this.handlers.setHandler(EventType.ERROR, null, null, new DefaultErrorHandler());
     }
 
     protected void setTransitions(Collection<Transition> collection, final boolean skipValidation)
@@ -142,7 +142,7 @@ public class EasyFlow<C extends StatefulContext>
         }
     }
 
-    public <C1 extends StatefulContext> EasyFlow<C1> setAction(final StateEnum state, final FallbackAction<C1> action)
+    public <C1 extends StatefulContext> EasyFlow<C1> setAction(final StateEnum state, final Action<C1> action)
     {
         if (state.getActionEvents() != null && state.getActionEvents().length > 0)
         {
@@ -169,10 +169,19 @@ public class EasyFlow<C extends StatefulContext>
         return (EasyFlow<C1>) this;
     }
 
-
     public <C1 extends StatefulContext> EasyFlow<C1> whenEnter(StateEnum state, ContextHandler<C1> onEnter)
     {
         handlers.setHandler(EventType.STATE_ENTER, state, null, onEnter);
+        return (EasyFlow<C1>) this;
+    }
+    /**
+     * 
+     * @param onEvent
+     * @return
+     */
+    public <C1 extends StatefulContext> EasyFlow<C1> whenDeactivate(EventHandler<C1> onEvent)
+    {
+        handlers.setHandler(EventType.ANY_STATE_DEACTIVATE, null, null, onEvent);
         return (EasyFlow<C1>) this;
     }
 
@@ -182,6 +191,13 @@ public class EasyFlow<C extends StatefulContext>
         return (EasyFlow<C1>) this;
     }
 
+
+    public <C1 extends StatefulContext> EasyFlow<C1> whenActivate(EventHandler<C1> onEvent)
+    {
+        handlers.setHandler(EventType.ANY_STATE_ACTIVATE, null, null, onEvent);
+        return (EasyFlow<C1>) this;
+    }
+    
     public <C1 extends StatefulContext> EasyFlow<C1> whenActivate(StateEnum state, ContextHandler<C1> onActivate)
     {
         handlers.setHandler(EventType.STATE_ACTIVATE, state, null, onActivate);
@@ -296,7 +312,7 @@ public class EasyFlow<C extends StatefulContext>
      * @param <E>
      * @return
      */
-    private boolean executeAction(final FallbackAction<C> action, final EventEnum event, final C context, final StateEnum state)
+    private boolean executeAction(final Action<C> action, final EventEnum event, final C context, final StateEnum state)
     {
         boolean consumed = false;
         if (action != null)
@@ -491,14 +507,14 @@ public class EasyFlow<C extends StatefulContext>
         }
     }
 
-    private class FallbackWrapperAction<C1 extends StatefulContext> implements FallbackAction<C1>
+    private class FallbackWrapperAction<C1 extends StatefulContext> implements Action<C1>
     {
         /** */
-        private final FallbackAction<C1> action;
+        private final Action<C1> action;
         /** */
         private final HashSet<EventEnum> events = new HashSet<EventEnum>();
         /** */
-        private FallbackWrapperAction(final FallbackAction<C1> action, final EventEnum... events)
+        private FallbackWrapperAction(final Action<C1> action, final EventEnum... events)
         {
             this.action = action;
             this.events.addAll(Arrays.asList(events));
