@@ -1,5 +1,7 @@
 <link rel="import" href="bower_components/polymer/polymer.html">
 <link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="bower_components/paper-dialog/paper-dialog.html">
+
 <script src="lib/d3.js"></script>
 <script src="https://d3js.org/d3-hierarchy.v1.min.js"></script>
 
@@ -11,14 +13,12 @@
         display: block;
 
       }
-      
       circle{
         fill: rgb(31, 119, 180);
         fill-opacity: .25;
         stroke: rgb(31, 119, 180);
         stroke-width: 1px;
       }
-
       .leaf circle {
         fill: #ff7f0e;
         fill-opacity: 1;
@@ -26,81 +26,134 @@
 
       text {
         font: 10px sans-serif;
+        text-anchor: start;
+      }
+
+      text.connectionText{
+        font: 15px sans-serif;
+        fill: white;
+        stroke: black;
+        stroke-width: 2;
         text-anchor: middle;
       }
+
     </style>
-    <svg id="svg" width="1000" height="1000">
+    <svg id="svg" width$="[[width]]" height$="[[height]]">
     </svg>
     <iron-ajax auto url="[[url]]" handle-as="json" last-response="{{model}}"></iron-ajax>
   </template>
 
   <script>
     Polymer({
-
       is: 'easy-flow',
-
       properties: {
-        
         url: {
           type: String,
         },
-
         model : {
           type: Object,
           observer : "_observerModel"
+        },
+        width : {
+          type: Number,
+        },
+        height : {
+          type: Number,
         }
+
       },
+      //-----------------------------------------------------------------------------------------
+      _showActions : function(node, rect){
+        console.log("_showActions: node = " + node + ", rect = " + rect);
+      },
+      //-----------------------------------------------------------------------------------------
       _observerModel : function(){
-        console.log("_observerModel: model");
-
+        var margin = {h: 20, v: 20};
+        var that = this;
         var root = d3.hierarchy(this.model[0]);
+        root.data.rect = {x: 0, y : 0,  w: this.width, h: this.height};
+        root.data.rect.xc = root.data.rect.x + root.data.rect.w/2;
+        root.data.rect.yc = root.data.rect.y + root.data.rect.h/2;
+        
+        var dict = {};
+        var transitions = [];
+        [root].concat(root.descendants()).forEach(function(parent, index){
+          dict[parent.data.name] = parent.data;
 
-        root.descendants().forEach(function(node) {
-          var x,y,w,h = 0;
-          if (node.parent == null){
-            node.x = 0;
-            node.y = 0;
-            node.w = 1000;
-            node.h = 1000;
-          }
-          if (node.children){
-            var childWidth, childHeight  = 0;
-            var isHorizontal;
-            if (node.w < node.h){
-              childHeight = node.h / node.children.length;             
-              childWidth = node.w - 10;             
-              isHorizontal = false;
-            } else {
-              childHeight = node.h - 10;             
-              childWidth = node.w / node.children.length; 
-              isHorizontal = true;
-            }
-
-            node.children.forEach(function(child, index){
-              if (isHorizontal){
-                child.x = node.x + index * childWidth;
-                child.y = node.y;
-              } else {
-                child.x = node.x;
-                child.y = node.y + index * childHeight;
-              }
-              child.w = childWidth;
-              child.h = childHeight;
+          if (parent.data.transitions && parent.data.transitions.length > 0){
+            parent.data.transitions.forEach(function(transition){
+              transition.source = parent.data.name;
+              transitions.push(transition);
             });
           }
-        }, this);
-
+          if (parent.children == null) return;
+          var ncol = nrow = Math.ceil(Math.sqrt(parent.children.length));
+          
+          var childWidth = parent.data.rect.w / ncol - margin.h * 2;
+          var childHeight = parent.data.rect.h / nrow - margin.v * 2;
+          parent.children.forEach(function(child, index){
+            var gridX = index % ncol; 
+            var gridY = Math.floor(index / ncol); 
+            var childX = parent.data.rect.x + gridX * childWidth + (gridX+1) * margin.h;
+            var childY = parent.data.rect.y + gridY * childHeight + (gridY+1) * margin.v;
+            child.data.rect = {x: childX, y : childY,  w: childWidth, h: childHeight};
+            child.data.rect.xc = child.data.rect.x + child.data.rect.w/2;
+            child.data.rect.yc = child.data.rect.y + child.data.rect.h/2;
+          })
+        });
 
         var svg = d3.select("svg");
         var g = svg.append("g").attr("transform", "translate(2,2)");
-
         var node = g.selectAll(".node")
           .data(root.descendants())
             .enter().append("g")
-              .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+              .attr("transform", function(node) { 
+                return "translate(" + node.data.rect.x + "," + node.data.rect.y + ")"; 
+              });
 
-        node.append("circle")
-          .attr("r", function(d) { return d.w; });
+        node.append("rect")
+          .attr("x", function(node) { return 0; })
+          .attr("y", function(node) { return 0;})
+          .attr("width", function(node) { return node.data.rect.w;})
+          .attr("height", function(node) { return node.data.rect.h; })
+          .attr("fill", function(node) { return "green"; })
+          .attr("opacity", function(node) { return 1.0; })
+          .attr("stroke", "black")
+          .attr("stroke-width", 1)
+          .on("mouseover", function(){ d3.select(this).attr("stroke-width", 5); })
+          .on("mouseout", function(){ d3.select(this).attr("stroke-width", 1); })
+          .on("mousedown", function(node){ that._showActions(node, this); });
+
+        node.append("text")
+          .attr("x", 5)
+          .attr("y", 20)
+          .text(function(node) { return node.data.name; });
+
+
+        var connections = g.selectAll(".transition").data(transitions).enter();
+        
+        connections.append("line")
+              .attr("x1", function(t) { return dict[t.source].rect.xc;})
+              .attr("y1", function(t) { return dict[t.source].rect.yc;})
+              .attr("x2", function(t) { return dict[t.target].rect.xc;})
+              .attr("y2", function(t) { return dict[t.target].rect.yc;})
+              .attr("stroke", 'black')
+              .attr("stroke-width", 1)
+              .on("mouseover", function(){ d3.select(this).attr("stroke-width", 5); })
+              .on("mouseout", function(){ d3.select(this).attr("stroke-width", 1); });
+            
+        connections.append("polygon")
+              .attr("points", "0,0 20,0 10,20")
+              .attr("stroke", 'lime')
+              .attr("transform", function(t) { 
+                return "translate(" + dict[t.target].rect.xc + "," + dict[t.target].rect.yc + ") rotate(4)"; 
+              });
+
+        connections.append("text")
+          .attr("x", function(t) { return dict[t.source].rect.xc + (dict[t.target].rect.xc - dict[t.source].rect.xc)/2; })
+          .attr("y", function(t) { return dict[t.source].rect.yc + (dict[t.target].rect.yc - dict[t.source].rect.yc)/2; })
+          .text(function(t) { return t.event; })
+          .attr("class", "connectionText");
 
         this.scopeSubtree(this.$.svg, true);
       }
