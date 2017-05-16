@@ -1,0 +1,109 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
+<script src="lib/d3.js"></script>
+<script src="https://d3js.org/d3-hierarchy.v1.min.js"></script>
+
+
+<dom-module id="easy-flow">
+  <template>
+    <style>
+      :host {
+        display: block;
+
+      }
+      
+      circle{
+        fill: rgb(31, 119, 180);
+        fill-opacity: .25;
+        stroke: rgb(31, 119, 180);
+        stroke-width: 1px;
+      }
+
+      .leaf circle {
+        fill: #ff7f0e;
+        fill-opacity: 1;
+      }
+
+      text {
+        font: 10px sans-serif;
+        text-anchor: middle;
+      }
+    </style>
+    <svg id="svg" width="1000" height="1000">
+    </svg>
+    <iron-ajax auto url="[[url]]" handle-as="json" last-response="{{model}}"></iron-ajax>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'easy-flow',
+
+      properties: {
+        
+        url: {
+          type: String,
+        },
+
+        model : {
+          type: Object,
+          observer : "_observerModel"
+        }
+      },
+      _observerModel : function(){
+        console.log("_observerModel: model");
+
+        var root = d3.hierarchy(this.model[0]);
+
+        root.descendants().forEach(function(node) {
+          var x,y,w,h = 0;
+          if (node.parent == null){
+            node.x = 0;
+            node.y = 0;
+            node.w = 1000;
+            node.h = 1000;
+          }
+          if (node.children){
+            var childWidth, childHeight  = 0;
+            var isHorizontal;
+            if (node.w < node.h){
+              childHeight = node.h / node.children.length;             
+              childWidth = node.w - 10;             
+              isHorizontal = false;
+            } else {
+              childHeight = node.h - 10;             
+              childWidth = node.w / node.children.length; 
+              isHorizontal = true;
+            }
+
+            node.children.forEach(function(child, index){
+              if (isHorizontal){
+                child.x = node.x + index * childWidth;
+                child.y = node.y;
+              } else {
+                child.x = node.x;
+                child.y = node.y + index * childHeight;
+              }
+              child.w = childWidth;
+              child.h = childHeight;
+            });
+          }
+        }, this);
+
+
+        var svg = d3.select("svg");
+        var g = svg.append("g").attr("transform", "translate(2,2)");
+
+        var node = g.selectAll(".node")
+          .data(root.descendants())
+            .enter().append("g")
+              .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+        node.append("circle")
+          .attr("r", function(d) { return d.w; });
+
+        this.scopeSubtree(this.$.svg, true);
+      }
+    });
+  </script>
+</dom-module>

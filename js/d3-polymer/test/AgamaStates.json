@@ -1,0 +1,1794 @@
+[
+    {
+        "children": [
+            {
+                "children": [
+                    {
+                        "children": [
+                            {
+                                "children": [
+                                    {
+                                        "children": [
+                                            {
+                                                "name": "VOD_PLAYING",
+                                                "transitions": [
+                                                    {
+                                                        "event": "TUNER_NO_SIGNAL",
+                                                        "target": "VOD_FAILED"
+                                                    }
+                                                ],
+                                                "events": [
+                                                    {
+                                                        "name": "PLAYER_PLAYING"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "name": "VOD_PAUSED"
+                                            },
+                                            {
+                                                "name": "VOD_SEEK"
+                                            },
+                                            {
+                                                "name": "VOD_FASTFORWARDING"
+                                            },
+                                            {
+                                                "name": "VOD_REWINDING"
+                                            }
+                                        ],
+                                        "name": "VOD_CONFIGURED",
+                                        "transitions": [
+                                            {
+                                                "event": "PLAYER_PLAYING",
+                                                "target": "VOD_PLAYING"
+                                            },
+                                            {
+                                                "event": "PAUSED",
+                                                "target": "VOD_PAUSED"
+                                            },
+                                            {
+                                                "event": "FASTFORWARDING",
+                                                "target": "VOD_FASTFORWARDING"
+                                            },
+                                            {
+                                                "event": "REWINDING",
+                                                "target": "VOD_REWINDING"
+                                            },
+                                            {
+                                                "event": "SEEK",
+                                                "target": "VOD_SEEK"
+                                            },
+                                            {
+                                                "event": "STOPPED",
+                                                "target": "IDLE_VOD"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "name": "VOD_CONFIGURING",
+                                "transitions": [
+                                    {
+                                        "event": "PLAYER_READY",
+                                        "target": "VOD_CONFIGURED"
+                                    }
+                                ]
+                            },
+                            {
+                                "children": [
+                                    {
+                                        "name": "VOD_FAILED_AV_ERROR",
+                                        "transitions": [
+                                            {
+                                                "event": "AV_OK",
+                                                "target": "VOD_PLAYING"
+                                            }
+                                        ],
+                                        "events": [
+                                            {
+                                                "name": "AV_ERROR"
+                                            },
+                                            {
+                                                "name": "ERICSSON_VOD_FAILED"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "VOD_HDCP",
+                                        "transitions": [
+                                            {
+                                                "event": "HDCP_OK",
+                                                "target": "VOD"
+                                            }
+                                        ],
+                                        "events": [
+                                            {
+                                                "name": "LIVE_ENTERING"
+                                            },
+                                            {
+                                                "name": "SELECTION_PREPARED"
+                                            },
+                                            {
+                                                "name": "SERVICE_SELECTING"
+                                            },
+                                            {
+                                                "name": "SERVICE_SELECTED"
+                                            },
+                                            {
+                                                "name": "SERVICE_CONTEXT_STOPPED"
+                                            },
+                                            {
+                                                "name": "SELECTION_FAILED"
+                                            },
+                                            {
+                                                "name": "STANDBY_PASSIVE_ENTERING"
+                                            },
+                                            {
+                                                "name": "OPERATIONAL"
+                                            },
+                                            {
+                                                "name": "TUNER_NO_SIGNAL"
+                                            },
+                                            {
+                                                "name": "LACK_OF_RESOURCES"
+                                            },
+                                            {
+                                                "name": "CA_NO_ACCESS"
+                                            },
+                                            {
+                                                "name": "CA_NO_CARD_INSERTED"
+                                            },
+                                            {
+                                                "name": "VOD_NO_CARD_INSERTED"
+                                            },
+                                            {
+                                                "name": "CA_CARD_INSERTED"
+                                            },
+                                            {
+                                                "name": "CA_COMMUNICATION_FAILED"
+                                            },
+                                            {
+                                                "name": "DB_PARENTAL_BLOCK"
+                                            },
+                                            {
+                                                "name": "CHANNEL_LOCK"
+                                            },
+                                            {
+                                                "name": "TIMESHIFT_ENTERED_PAUSED"
+                                            },
+                                            {
+                                                "name": "TIMESHIFT_ENTERED_REWINDING"
+                                            },
+                                            {
+                                                "name": "TIMESHIFT_ENTERED_PLAYING"
+                                            },
+                                            {
+                                                "name": "TIMESHIFT_LEFT"
+                                            },
+                                            {
+                                                "name": "PVR_SERVICE_CHANGED"
+                                            },
+                                            {
+                                                "name": "IDLE_STB"
+                                            },
+                                            {
+                                                "name": "NO_ACCESS"
+                                            },
+                                            {
+                                                "name": "AV_ERROR"
+                                            },
+                                            {
+                                                "name": "AV_OK"
+                                            },
+                                            {
+                                                "name": "FAILED"
+                                            },
+                                            {
+                                                "name": "ERICSSON_VOD_FAILED"
+                                            },
+                                            {
+                                                "name": "ERICSSON_VOD_SERVICE_NOT_DISCOVERED"
+                                            },
+                                            {
+                                                "name": "FASTFORWARDING"
+                                            },
+                                            {
+                                                "name": "REWINDING"
+                                            },
+                                            {
+                                                "name": "PAUSED"
+                                            },
+                                            {
+                                                "name": "STOPPED"
+                                            },
+                                            {
+                                                "name": "SEEK"
+                                            },
+                                            {
+                                                "name": "SEEK_DONE"
+                                            },
+                                            {
+                                                "name": "HDCP_FAIL"
+                                            },
+                                            {
+                                                "name": "HDCP_OK"
+                                            },
+                                            {
+                                                "name": "RECEIVER_LOCKED"
+                                            },
+                                            {
+                                                "name": "NO_ERROR"
+                                            },
+                                            {
+                                                "name": "PLAYER_CONFIGURATION"
+                                            },
+                                            {
+                                                "name": "PLAYER_READY"
+                                            },
+                                            {
+                                                "name": "PLAYER_PLAYING"
+                                            },
+                                            {
+                                                "name": "RECORDING_USER_LOCKED"
+                                            },
+                                            {
+                                                "name": "RECORDING_USER_UNLOCKED"
+                                            },
+                                            {
+                                                "name": "TIMER_WENT_OFF"
+                                            },
+                                            {
+                                                "name": "APPLICATION_START"
+                                            },
+                                            {
+                                                "name": "NETFLIX_NO_ESN"
+                                            },
+                                            {
+                                                "name": "RTSP_TEARDOWN"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "name": "VOD_FAILED",
+                                "transitions": [
+                                    {
+                                        "event": "NO_ERROR",
+                                        "target": "VOD"
+                                    }
+                                ],
+                                "events": [
+                                    {
+                                        "name": "PAUSED"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "VOD_NO_ACCESS"
+                            },
+                            {
+                                "name": "VOD_NO_ACCESS_CA_PROBLEM",
+                                "transitions": [
+                                    {
+                                        "event": "CA_CARD_INSERTED",
+                                        "target": "VOD"
+                                    }
+                                ],
+                                "events": [
+                                    {
+                                        "name": "LIVE_ENTERING"
+                                    },
+                                    {
+                                        "name": "SELECTION_PREPARED"
+                                    },
+                                    {
+                                        "name": "SERVICE_SELECTING"
+                                    },
+                                    {
+                                        "name": "SERVICE_SELECTED"
+                                    },
+                                    {
+                                        "name": "SERVICE_CONTEXT_STOPPED"
+                                    },
+                                    {
+                                        "name": "SELECTION_FAILED"
+                                    },
+                                    {
+                                        "name": "STANDBY_PASSIVE_ENTERING"
+                                    },
+                                    {
+                                        "name": "OPERATIONAL"
+                                    },
+                                    {
+                                        "name": "TUNER_NO_SIGNAL"
+                                    },
+                                    {
+                                        "name": "LACK_OF_RESOURCES"
+                                    },
+                                    {
+                                        "name": "CA_NO_ACCESS"
+                                    },
+                                    {
+                                        "name": "CA_NO_CARD_INSERTED"
+                                    },
+                                    {
+                                        "name": "VOD_NO_CARD_INSERTED"
+                                    },
+                                    {
+                                        "name": "CA_CARD_INSERTED"
+                                    },
+                                    {
+                                        "name": "CA_COMMUNICATION_FAILED"
+                                    },
+                                    {
+                                        "name": "DB_PARENTAL_BLOCK"
+                                    },
+                                    {
+                                        "name": "CHANNEL_LOCK"
+                                    },
+                                    {
+                                        "name": "TIMESHIFT_ENTERED_PAUSED"
+                                    },
+                                    {
+                                        "name": "TIMESHIFT_ENTERED_REWINDING"
+                                    },
+                                    {
+                                        "name": "TIMESHIFT_ENTERED_PLAYING"
+                                    },
+                                    {
+                                        "name": "TIMESHIFT_LEFT"
+                                    },
+                                    {
+                                        "name": "PVR_SERVICE_CHANGED"
+                                    },
+                                    {
+                                        "name": "IDLE_STB"
+                                    },
+                                    {
+                                        "name": "NO_ACCESS"
+                                    },
+                                    {
+                                        "name": "AV_ERROR"
+                                    },
+                                    {
+                                        "name": "AV_OK"
+                                    },
+                                    {
+                                        "name": "FAILED"
+                                    },
+                                    {
+                                        "name": "ERICSSON_VOD_FAILED"
+                                    },
+                                    {
+                                        "name": "ERICSSON_VOD_SERVICE_NOT_DISCOVERED"
+                                    },
+                                    {
+                                        "name": "FASTFORWARDING"
+                                    },
+                                    {
+                                        "name": "REWINDING"
+                                    },
+                                    {
+                                        "name": "PAUSED"
+                                    },
+                                    {
+                                        "name": "STOPPED"
+                                    },
+                                    {
+                                        "name": "SEEK"
+                                    },
+                                    {
+                                        "name": "SEEK_DONE"
+                                    },
+                                    {
+                                        "name": "HDCP_OK"
+                                    },
+                                    {
+                                        "name": "RECEIVER_LOCKED"
+                                    },
+                                    {
+                                        "name": "NO_ERROR"
+                                    },
+                                    {
+                                        "name": "PLAYER_CONFIGURATION"
+                                    },
+                                    {
+                                        "name": "PLAYER_READY"
+                                    },
+                                    {
+                                        "name": "PLAYER_PLAYING"
+                                    },
+                                    {
+                                        "name": "RECORDING_USER_LOCKED"
+                                    },
+                                    {
+                                        "name": "RECORDING_USER_UNLOCKED"
+                                    },
+                                    {
+                                        "name": "TIMER_WENT_OFF"
+                                    },
+                                    {
+                                        "name": "APPLICATION_START"
+                                    },
+                                    {
+                                        "name": "NETFLIX_NO_ESN"
+                                    },
+                                    {
+                                        "name": "RTSP_TEARDOWN"
+                                    }
+                                ]
+                            }
+                        ],
+                        "name": "VOD",
+                        "transitions": [
+                            {
+                                "event": "IDLE_STB",
+                                "target": "IDLE_UNDEFINED"
+                            },
+                            {
+                                "event": "HDCP_FAIL",
+                                "target": "VOD_HDCP"
+                            },
+                            {
+                                "event": "ERICSSON_VOD_FAILED",
+                                "target": "VOD_FAILED"
+                            },
+                            {
+                                "event": "PLAYER_PLAYING",
+                                "target": "VOD_PLAYING"
+                            },
+                            {
+                                "event": "PAUSED",
+                                "target": "VOD_PAUSED"
+                            },
+                            {
+                                "event": "FASTFORWARDING",
+                                "target": "VOD_FASTFORWARDING"
+                            },
+                            {
+                                "event": "REWINDING",
+                                "target": "VOD_REWINDING"
+                            },
+                            {
+                                "event": "AV_ERROR",
+                                "target": "VOD_FAILED_AV_ERROR"
+                            },
+                            {
+                                "event": "CA_NO_ACCESS",
+                                "target": "VOD_NO_ACCESS_CA_PROBLEM"
+                            },
+                            {
+                                "event": "VOD_NO_CARD_INSERTED",
+                                "target": "VOD_NO_ACCESS_CA_PROBLEM"
+                            },
+                            {
+                                "event": "CA_COMMUNICATION_FAILED",
+                                "target": "VOD_NO_ACCESS_CA_PROBLEM"
+                            }
+                        ],
+                        "events": [
+                            {
+                                "name": "RTSP_TEARDOWN"
+                            }
+                        ]
+                    },
+                    {
+                        "children": [
+                            {
+                                "name": "TIMESHIFT_FAILED",
+                                "transitions": [
+                                    {
+                                        "event": "NO_ERROR",
+                                        "target": "TIMESHIFT"
+                                    }
+                                ]
+                            },
+                            {
+                                "children": [
+                                    {
+                                        "name": "TIMESHIFT_FASTFORWARDING"
+                                    },
+                                    {
+                                        "name": "TIMESHIFT_SEEK"
+                                    },
+                                    {
+                                        "name": "TIMESHIFT_REWINDING"
+                                    },
+                                    {
+                                        "name": "TIMESHIFT_PAUSED",
+                                        "events": [
+                                            {
+                                                "name": "PAUSED"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "TIMESHIFT_PLAYING",
+                                        "transitions": [
+                                            {
+                                                "event": "AV_ERROR",
+                                                "target": "TIMESHIFT_FAILED"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "name": "TIMESHIFT_VIEWING"
+                            },
+                            {
+                                "name": "TIMESHIFT_HDCP",
+                                "transitions": [
+                                    {
+                                        "event": "HDCP_OK",
+                                        "target": "TIMESHIFT"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "TIMESHIFT_NO_ACCESS"
+                            }
+                        ],
+                        "name": "TIMESHIFT",
+                        "transitions": [
+                            {
+                                "event": "HDCP_FAIL",
+                                "target": "TIMESHIFT_HDCP"
+                            },
+                            {
+                                "event": "TIMESHIFT_LEFT",
+                                "target": "LIVE"
+                            },
+                            {
+                                "event": "PAUSED",
+                                "target": "TIMESHIFT_PAUSED"
+                            },
+                            {
+                                "event": "PLAYER_PLAYING",
+                                "target": "TIMESHIFT_PLAYING"
+                            },
+                            {
+                                "event": "FASTFORWARDING",
+                                "target": "TIMESHIFT_FASTFORWARDING"
+                            },
+                            {
+                                "event": "REWINDING",
+                                "target": "TIMESHIFT_REWINDING"
+                            },
+                            {
+                                "event": "SEEK",
+                                "target": "TIMESHIFT_SEEK"
+                            }
+                        ]
+                    },
+                    {
+                        "children": [
+                            {
+                                "name": "PVR_PAUSED",
+                                "transitions": [
+                                    {
+                                        "event": "FASTFORWARDING",
+                                        "target": "PVR_FASTFORWARDING"
+                                    },
+                                    {
+                                        "event": "REWINDING",
+                                        "target": "PVR_REWINDING"
+                                    }
+                                ]
+                            },
+                            {
+                                "children": [
+                                    {
+                                        "name": "PVR_FASTFORWARDING_SEEK",
+                                        "transitions": [
+                                            {
+                                                "event": "SEEK_DONE",
+                                                "target": "PVR_FASTFORWARDING"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "name": "PVR_FASTFORWARDING",
+                                "transitions": [
+                                    {
+                                        "event": "SEEK",
+                                        "target": "PVR_FASTFORWARDING_SEEK"
+                                    }
+                                ]
+                            },
+                            {
+                                "children": [
+                                    {
+                                        "name": "PVR_REWINDING_SEEK",
+                                        "transitions": [
+                                            {
+                                                "event": "SEEK_DONE",
+                                                "target": "PVR_REWINDING"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "name": "PVR_REWINDING",
+                                "transitions": [
+                                    {
+                                        "event": "SEEK",
+                                        "target": "PVR_REWINDING_SEEK"
+                                    }
+                                ]
+                            },
+                            {
+                                "children": [
+                                    {
+                                        "name": "PVR_HDCP",
+                                        "transitions": [
+                                            {
+                                                "event": "HDCP_OK",
+                                                "target": "PVR"
+                                            }
+                                        ],
+                                        "events": [
+                                            {
+                                                "name": "LIVE_ENTERING"
+                                            },
+                                            {
+                                                "name": "SELECTION_PREPARED"
+                                            },
+                                            {
+                                                "name": "SERVICE_SELECTING"
+                                            },
+                                            {
+                                                "name": "SERVICE_SELECTED"
+                                            },
+                                            {
+                                                "name": "SERVICE_CONTEXT_STOPPED"
+                                            },
+                                            {
+                                                "name": "SELECTION_FAILED"
+                                            },
+                                            {
+                                                "name": "STANDBY_PASSIVE_ENTERING"
+                                            },
+                                            {
+                                                "name": "OPERATIONAL"
+                                            },
+                                            {
+                                                "name": "TUNER_NO_SIGNAL"
+                                            },
+                                            {
+                                                "name": "LACK_OF_RESOURCES"
+                                            },
+                                            {
+                                                "name": "CA_NO_ACCESS"
+                                            },
+                                            {
+                                                "name": "CA_NO_CARD_INSERTED"
+                                            },
+                                            {
+                                                "name": "VOD_NO_CARD_INSERTED"
+                                            },
+                                            {
+                                                "name": "CA_CARD_INSERTED"
+                                            },
+                                            {
+                                                "name": "CA_COMMUNICATION_FAILED"
+                                            },
+                                            {
+                                                "name": "DB_PARENTAL_BLOCK"
+                                            },
+                                            {
+                                                "name": "CHANNEL_LOCK"
+                                            },
+                                            {
+                                                "name": "TIMESHIFT_ENTERED_PAUSED"
+                                            },
+                                            {
+                                                "name": "TIMESHIFT_ENTERED_REWINDING"
+                                            },
+                                            {
+                                                "name": "TIMESHIFT_ENTERED_PLAYING"
+                                            },
+                                            {
+                                                "name": "TIMESHIFT_LEFT"
+                                            },
+                                            {
+                                                "name": "PVR_SERVICE_CHANGED"
+                                            },
+                                            {
+                                                "name": "IDLE_STB"
+                                            },
+                                            {
+                                                "name": "NO_ACCESS"
+                                            },
+                                            {
+                                                "name": "AV_ERROR"
+                                            },
+                                            {
+                                                "name": "AV_OK"
+                                            },
+                                            {
+                                                "name": "FAILED"
+                                            },
+                                            {
+                                                "name": "ERICSSON_VOD_FAILED"
+                                            },
+                                            {
+                                                "name": "ERICSSON_VOD_SERVICE_NOT_DISCOVERED"
+                                            },
+                                            {
+                                                "name": "FASTFORWARDING"
+                                            },
+                                            {
+                                                "name": "REWINDING"
+                                            },
+                                            {
+                                                "name": "PAUSED"
+                                            },
+                                            {
+                                                "name": "STOPPED"
+                                            },
+                                            {
+                                                "name": "SEEK"
+                                            },
+                                            {
+                                                "name": "SEEK_DONE"
+                                            },
+                                            {
+                                                "name": "HDCP_FAIL"
+                                            },
+                                            {
+                                                "name": "HDCP_OK"
+                                            },
+                                            {
+                                                "name": "RECEIVER_LOCKED"
+                                            },
+                                            {
+                                                "name": "NO_ERROR"
+                                            },
+                                            {
+                                                "name": "PLAYER_CONFIGURATION"
+                                            },
+                                            {
+                                                "name": "PLAYER_READY"
+                                            },
+                                            {
+                                                "name": "PLAYER_PLAYING"
+                                            },
+                                            {
+                                                "name": "RECORDING_USER_LOCKED"
+                                            },
+                                            {
+                                                "name": "RECORDING_USER_UNLOCKED"
+                                            },
+                                            {
+                                                "name": "TIMER_WENT_OFF"
+                                            },
+                                            {
+                                                "name": "APPLICATION_START"
+                                            },
+                                            {
+                                                "name": "NETFLIX_NO_ESN"
+                                            },
+                                            {
+                                                "name": "RTSP_TEARDOWN"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "name": "PVR_FAILED",
+                                "transitions": [
+                                    {
+                                        "event": "NO_ERROR",
+                                        "target": "PVR"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "PVR_NO_ACCESS",
+                                "events": [
+                                    {
+                                        "name": "PAUSED"
+                                    },
+                                    {
+                                        "name": "DB_PARENTAL_BLOCK"
+                                    },
+                                    {
+                                        "name": "NO_ACCESS"
+                                    },
+                                    {
+                                        "name": "RECORDING_USER_LOCKED"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "PVR_SEEK"
+                            },
+                            {
+                                "name": "PVR_PLAYING",
+                                "transitions": [
+                                    {
+                                        "event": "PAUSED",
+                                        "target": "PVR_PAUSED"
+                                    },
+                                    {
+                                        "event": "SEEK",
+                                        "target": "PVR_SEEK"
+                                    },
+                                    {
+                                        "event": "REWINDING",
+                                        "target": "PVR_REWINDING"
+                                    },
+                                    {
+                                        "event": "FASTFORWARDING",
+                                        "target": "PVR_FASTFORWARDING"
+                                    }
+                                ],
+                                "events": [
+                                    {
+                                        "name": "PLAYER_PLAYING"
+                                    }
+                                ]
+                            }
+                        ],
+                        "name": "PVR",
+                        "transitions": [
+                            {
+                                "event": "IDLE_STB",
+                                "target": "IDLE_UNDEFINED"
+                            },
+                            {
+                                "event": "STOPPED",
+                                "target": "IDLE_UNDEFINED"
+                            },
+                            {
+                                "event": "SERVICE_SELECTING",
+                                "target": "LIVE_SERVICE_SELECTING"
+                            },
+                            {
+                                "event": "PLAYER_PLAYING",
+                                "target": "PVR_PLAYING"
+                            },
+                            {
+                                "event": "FASTFORWARDING",
+                                "target": "PVR_FASTFORWARDING"
+                            },
+                            {
+                                "event": "REWINDING",
+                                "target": "PVR_REWINDING"
+                            },
+                            {
+                                "event": "PAUSED",
+                                "target": "PVR_PAUSED"
+                            },
+                            {
+                                "event": "FAILED",
+                                "target": "PVR_FAILED"
+                            },
+                            {
+                                "event": "HDCP_FAIL",
+                                "target": "PVR_HDCP"
+                            },
+                            {
+                                "event": "NO_ACCESS",
+                                "target": "PVR_NO_ACCESS"
+                            },
+                            {
+                                "event": "DB_PARENTAL_BLOCK",
+                                "target": "PVR_NO_ACCESS"
+                            },
+                            {
+                                "event": "CA_NO_CARD_INSERTED",
+                                "target": "PVR_NO_ACCESS"
+                            },
+                            {
+                                "event": "CA_COMMUNICATION_FAILED",
+                                "target": "PVR_NO_ACCESS"
+                            },
+                            {
+                                "event": "RECORDING_USER_LOCKED",
+                                "target": "PVR_NO_ACCESS"
+                            },
+                            {
+                                "event": "TUNER_NO_SIGNAL",
+                                "target": "PVR_FAILED"
+                            }
+                        ]
+                    },
+                    {
+                        "children": [
+                            {
+                                "children": [
+                                    {
+                                        "name": "LIVE_FAILED_SERVICE_NO_SELECTED",
+                                        "events": [
+                                            {
+                                                "name": "NO_ERROR"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "name": "LIVE_FAILED",
+                                "transitions": [
+                                    {
+                                        "event": "NO_ERROR",
+                                        "target": "LIVE"
+                                    },
+                                    {
+                                        "event": "CA_NO_ACCESS",
+                                        "target": "LIVE_NO_ACCESS"
+                                    },
+                                    {
+                                        "event": "CA_NO_CARD_INSERTED",
+                                        "target": "LIVE_NO_ACCESS_CA_PROBLEM"
+                                    }
+                                ]
+                            },
+                            {
+                                "children": [
+                                    {
+                                        "name": "LIVE_NO_ACCESS_CA_PROBLEM",
+                                        "transitions": [
+                                            {
+                                                "event": "CA_CARD_INSERTED",
+                                                "target": "LIVE"
+                                            },
+                                            {
+                                                "event": "SERVICE_SELECTING",
+                                                "target": "LIVE_SERVICE_SELECTING"
+                                            }
+                                        ],
+                                        "events": [
+                                            {
+                                                "name": "LIVE_ENTERING"
+                                            },
+                                            {
+                                                "name": "SERVICE_SELECTED"
+                                            },
+                                            {
+                                                "name": "SERVICE_CONTEXT_STOPPED"
+                                            },
+                                            {
+                                                "name": "SELECTION_FAILED"
+                                            },
+                                            {
+                                                "name": "STANDBY_PASSIVE_ENTERING"
+                                            },
+                                            {
+                                                "name": "OPERATIONAL"
+                                            },
+                                            {
+                                                "name": "TUNER_NO_SIGNAL"
+                                            },
+                                            {
+                                                "name": "LACK_OF_RESOURCES"
+                                            },
+                                            {
+                                                "name": "CA_NO_ACCESS"
+                                            },
+                                            {
+                                                "name": "CA_NO_CARD_INSERTED"
+                                            },
+                                            {
+                                                "name": "CA_CARD_INSERTED"
+                                            },
+                                            {
+                                                "name": "CA_COMMUNICATION_FAILED"
+                                            },
+                                            {
+                                                "name": "DB_PARENTAL_BLOCK"
+                                            },
+                                            {
+                                                "name": "CHANNEL_LOCK"
+                                            },
+                                            {
+                                                "name": "TIMESHIFT_ENTERED_PAUSED"
+                                            },
+                                            {
+                                                "name": "TIMESHIFT_ENTERED_REWINDING"
+                                            },
+                                            {
+                                                "name": "TIMESHIFT_ENTERED_PLAYING"
+                                            },
+                                            {
+                                                "name": "TIMESHIFT_LEFT"
+                                            },
+                                            {
+                                                "name": "PVR_SERVICE_CHANGED"
+                                            },
+                                            {
+                                                "name": "IDLE_STB"
+                                            },
+                                            {
+                                                "name": "NO_ACCESS"
+                                            },
+                                            {
+                                                "name": "AV_ERROR"
+                                            },
+                                            {
+                                                "name": "AV_OK"
+                                            },
+                                            {
+                                                "name": "FAILED"
+                                            },
+                                            {
+                                                "name": "ERICSSON_VOD_FAILED"
+                                            },
+                                            {
+                                                "name": "FASTFORWARDING"
+                                            },
+                                            {
+                                                "name": "REWINDING"
+                                            },
+                                            {
+                                                "name": "PAUSED"
+                                            },
+                                            {
+                                                "name": "STOPPED"
+                                            },
+                                            {
+                                                "name": "SEEK"
+                                            },
+                                            {
+                                                "name": "SEEK_DONE"
+                                            },
+                                            {
+                                                "name": "HDCP_OK"
+                                            },
+                                            {
+                                                "name": "RECEIVER_LOCKED"
+                                            },
+                                            {
+                                                "name": "NO_ERROR"
+                                            },
+                                            {
+                                                "name": "PLAYER_CONFIGURATION"
+                                            },
+                                            {
+                                                "name": "PLAYER_READY"
+                                            },
+                                            {
+                                                "name": "PLAYER_PLAYING"
+                                            },
+                                            {
+                                                "name": "RECORDING_USER_LOCKED"
+                                            },
+                                            {
+                                                "name": "RECORDING_USER_UNLOCKED"
+                                            },
+                                            {
+                                                "name": "TIMER_WENT_OFF"
+                                            },
+                                            {
+                                                "name": "APPLICATION_START"
+                                            },
+                                            {
+                                                "name": "NETFLIX_NO_ESN"
+                                            },
+                                            {
+                                                "name": "RTSP_TEARDOWN"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "name": "LIVE_NO_ACCESS",
+                                "transitions": [
+                                    {
+                                        "event": "NO_ERROR",
+                                        "target": "LIVE_SERVICE_SELECTED"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "LIVE_TEMPORARY_VOD_NO_CARD_INSERTED_ERROR",
+                                "transitions": [
+                                    {
+                                        "event": "TIMER_WENT_OFF",
+                                        "target": "LIVE"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "LIVE_TEMPORARY_SERVICE_GROUP_DISCOVERY_ERROR",
+                                "transitions": [
+                                    {
+                                        "event": "TIMER_WENT_OFF",
+                                        "target": "LIVE"
+                                    }
+                                ]
+                            },
+                            {
+                                "children": [
+                                    {
+                                        "name": "LIVE_SERVICE_SELECTED"
+                                    },
+                                    {
+                                        "name": "LIVE_SELECTION_PREPARED",
+                                        "transitions": [
+                                            {
+                                                "event": "SERVICE_SELECTING",
+                                                "target": "LIVE_SERVICE_SELECTING"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "LIVE_SERVICE_SELECTING",
+                                        "transitions": [
+                                            {
+                                                "event": "SERVICE_SELECTED",
+                                                "target": "LIVE_SERVICE_SELECTED"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "name": "LIVE_VIEWING",
+                                "transitions": [
+                                    {
+                                        "event": "RECEIVER_LOCKED",
+                                        "target": "LIVE_NO_ACCESS"
+                                    },
+                                    {
+                                        "event": "CA_NO_ACCESS",
+                                        "target": "LIVE_NO_ACCESS"
+                                    },
+                                    {
+                                        "event": "DB_PARENTAL_BLOCK",
+                                        "target": "LIVE_NO_ACCESS"
+                                    },
+                                    {
+                                        "event": "LACK_OF_RESOURCES",
+                                        "target": "LIVE_NO_ACCESS"
+                                    },
+                                    {
+                                        "event": "CHANNEL_LOCK",
+                                        "target": "LIVE_NO_ACCESS"
+                                    },
+                                    {
+                                        "event": "AV_ERROR",
+                                        "target": "LIVE_FAILED"
+                                    },
+                                    {
+                                        "event": "TUNER_NO_SIGNAL",
+                                        "target": "LIVE_FAILED"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "LIVE_TEMPORARY_NETFLIX_NO_ESN_ERROR",
+                                "transitions": [
+                                    {
+                                        "event": "TIMER_WENT_OFF",
+                                        "target": "LIVE"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "LIVE_HDCP",
+                                "transitions": [
+                                    {
+                                        "event": "HDCP_OK",
+                                        "target": "LIVE"
+                                    }
+                                ],
+                                "events": [
+                                    {
+                                        "name": "LIVE_ENTERING"
+                                    },
+                                    {
+                                        "name": "SELECTION_PREPARED"
+                                    },
+                                    {
+                                        "name": "SERVICE_SELECTING"
+                                    },
+                                    {
+                                        "name": "SERVICE_SELECTED"
+                                    },
+                                    {
+                                        "name": "SERVICE_CONTEXT_STOPPED"
+                                    },
+                                    {
+                                        "name": "SELECTION_FAILED"
+                                    },
+                                    {
+                                        "name": "STANDBY_PASSIVE_ENTERING"
+                                    },
+                                    {
+                                        "name": "OPERATIONAL"
+                                    },
+                                    {
+                                        "name": "TUNER_NO_SIGNAL"
+                                    },
+                                    {
+                                        "name": "LACK_OF_RESOURCES"
+                                    },
+                                    {
+                                        "name": "CA_NO_ACCESS"
+                                    },
+                                    {
+                                        "name": "CA_NO_CARD_INSERTED"
+                                    },
+                                    {
+                                        "name": "VOD_NO_CARD_INSERTED"
+                                    },
+                                    {
+                                        "name": "CA_CARD_INSERTED"
+                                    },
+                                    {
+                                        "name": "CA_COMMUNICATION_FAILED"
+                                    },
+                                    {
+                                        "name": "DB_PARENTAL_BLOCK"
+                                    },
+                                    {
+                                        "name": "CHANNEL_LOCK"
+                                    },
+                                    {
+                                        "name": "TIMESHIFT_ENTERED_PAUSED"
+                                    },
+                                    {
+                                        "name": "TIMESHIFT_ENTERED_REWINDING"
+                                    },
+                                    {
+                                        "name": "TIMESHIFT_ENTERED_PLAYING"
+                                    },
+                                    {
+                                        "name": "TIMESHIFT_LEFT"
+                                    },
+                                    {
+                                        "name": "PVR_SERVICE_CHANGED"
+                                    },
+                                    {
+                                        "name": "IDLE_STB"
+                                    },
+                                    {
+                                        "name": "NO_ACCESS"
+                                    },
+                                    {
+                                        "name": "AV_ERROR"
+                                    },
+                                    {
+                                        "name": "AV_OK"
+                                    },
+                                    {
+                                        "name": "FAILED"
+                                    },
+                                    {
+                                        "name": "ERICSSON_VOD_FAILED"
+                                    },
+                                    {
+                                        "name": "ERICSSON_VOD_SERVICE_NOT_DISCOVERED"
+                                    },
+                                    {
+                                        "name": "FASTFORWARDING"
+                                    },
+                                    {
+                                        "name": "REWINDING"
+                                    },
+                                    {
+                                        "name": "PAUSED"
+                                    },
+                                    {
+                                        "name": "STOPPED"
+                                    },
+                                    {
+                                        "name": "SEEK"
+                                    },
+                                    {
+                                        "name": "SEEK_DONE"
+                                    },
+                                    {
+                                        "name": "HDCP_FAIL"
+                                    },
+                                    {
+                                        "name": "HDCP_OK"
+                                    },
+                                    {
+                                        "name": "RECEIVER_LOCKED"
+                                    },
+                                    {
+                                        "name": "NO_ERROR"
+                                    },
+                                    {
+                                        "name": "PLAYER_CONFIGURATION"
+                                    },
+                                    {
+                                        "name": "PLAYER_READY"
+                                    },
+                                    {
+                                        "name": "PLAYER_PLAYING"
+                                    },
+                                    {
+                                        "name": "RECORDING_USER_LOCKED"
+                                    },
+                                    {
+                                        "name": "RECORDING_USER_UNLOCKED"
+                                    },
+                                    {
+                                        "name": "TIMER_WENT_OFF"
+                                    },
+                                    {
+                                        "name": "APPLICATION_START"
+                                    },
+                                    {
+                                        "name": "NETFLIX_NO_ESN"
+                                    },
+                                    {
+                                        "name": "RTSP_TEARDOWN"
+                                    }
+                                ]
+                            }
+                        ],
+                        "name": "LIVE",
+                        "transitions": [
+                            {
+                                "event": "HDCP_FAIL",
+                                "target": "LIVE_HDCP"
+                            },
+                            {
+                                "event": "TIMESHIFT_ENTERED_PAUSED",
+                                "target": "TIMESHIFT_PAUSED"
+                            },
+                            {
+                                "event": "TIMESHIFT_ENTERED_REWINDING",
+                                "target": "TIMESHIFT_REWINDING"
+                            },
+                            {
+                                "event": "TIMESHIFT_ENTERED_PLAYING",
+                                "target": "TIMESHIFT_PLAYING"
+                            },
+                            {
+                                "event": "FAILED",
+                                "target": "LIVE_FAILED"
+                            },
+                            {
+                                "event": "NO_ACCESS",
+                                "target": "LIVE_NO_ACCESS"
+                            },
+                            {
+                                "event": "ERICSSON_VOD_SERVICE_NOT_DISCOVERED",
+                                "target": "LIVE_TEMPORARY_SERVICE_GROUP_DISCOVERY_ERROR"
+                            },
+                            {
+                                "event": "VOD_NO_CARD_INSERTED",
+                                "target": "LIVE_TEMPORARY_VOD_NO_CARD_INSERTED_ERROR"
+                            },
+                            {
+                                "event": "NETFLIX_NO_ESN",
+                                "target": "LIVE_TEMPORARY_NETFLIX_NO_ESN_ERROR"
+                            },
+                            {
+                                "event": "SERVICE_CONTEXT_STOPPED",
+                                "target": "IDLE_UNDEFINED"
+                            },
+                            {
+                                "event": "SERVICE_SELECTED",
+                                "target": "LIVE_SERVICE_SELECTED"
+                            },
+                            {
+                                "event": "CA_NO_CARD_INSERTED",
+                                "target": "LIVE_NO_ACCESS_CA_PROBLEM"
+                            },
+                            {
+                                "event": "CA_COMMUNICATION_FAILED",
+                                "target": "LIVE_NO_ACCESS_CA_PROBLEM"
+                            },
+                            {
+                                "event": "SELECTION_FAILED",
+                                "target": "LIVE_FAILED_SERVICE_NO_SELECTED"
+                            }
+                        ]
+                    },
+                    {
+                        "children": [
+                            {
+                                "name": "IDLE_HDCP",
+                                "transitions": [
+                                    {
+                                        "event": "HDCP_OK",
+                                        "target": "IDLE"
+                                    }
+                                ]
+                            },
+                            {
+                                "children": [
+                                    {
+                                        "name": "IDLE_VOD",
+                                        "transitions": [
+                                            {
+                                                "event": "PLAYER_PLAYING",
+                                                "target": "VOD_PLAYING"
+                                            }
+                                        ],
+                                        "events": [
+                                            {
+                                                "name": "RTSP_TEARDOWN"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "name": "IDLE_UNDEFINED"
+                            }
+                        ],
+                        "name": "IDLE",
+                        "transitions": [
+                            {
+                                "event": "HDCP_FAIL",
+                                "target": "IDLE_HDCP"
+                            },
+                            {
+                                "event": "SERVICE_SELECTING",
+                                "target": "LIVE_SERVICE_SELECTING"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "APPLICATION",
+                        "events": [
+                            {
+                                "name": "SERVICE_CONTEXT_STOPPED"
+                            },
+                            {
+                                "name": "APPLICATION_START"
+                            }
+                        ]
+                    }
+                ],
+                "name": "OPERATE",
+                "transitions": [
+                    {
+                        "event": "RECORDING_USER_LOCKED",
+                        "target": "PVR"
+                    },
+                    {
+                        "event": "PVR_SERVICE_CHANGED",
+                        "target": "PVR"
+                    },
+                    {
+                        "event": "SELECTION_PREPARED",
+                        "target": "LIVE_SELECTION_PREPARED"
+                    },
+                    {
+                        "event": "SERVICE_SELECTING",
+                        "target": "LIVE_SERVICE_SELECTING"
+                    },
+                    {
+                        "event": "PLAYER_CONFIGURATION",
+                        "target": "VOD_CONFIGURING"
+                    },
+                    {
+                        "event": "PLAYER_READY",
+                        "target": "VOD_CONFIGURED"
+                    },
+                    {
+                        "event": "APPLICATION_START",
+                        "target": "APPLICATION"
+                    }
+                ]
+            },
+            {
+                "children": [
+                    {
+                        "name": "STANDBY_PASSIVE",
+                        "transitions": [
+                            {
+                                "event": "STANDBY_ACTIVE_ENTERING",
+                                "target": "STANDBY_ACTIVE"
+                            }
+                        ],
+                        "events": [
+                            {
+                                "name": "SELECTION_PREPARED"
+                            },
+                            {
+                                "name": "SERVICE_SELECTING"
+                            },
+                            {
+                                "name": "SERVICE_SELECTED"
+                            },
+                            {
+                                "name": "SERVICE_CONTEXT_STOPPED"
+                            },
+                            {
+                                "name": "SELECTION_FAILED"
+                            },
+                            {
+                                "name": "STANDBY_ACTIVE_ENTERING"
+                            },
+                            {
+                                "name": "STANDBY_PASSIVE_ENTERING"
+                            },
+                            {
+                                "name": "TUNER_NO_SIGNAL"
+                            },
+                            {
+                                "name": "LACK_OF_RESOURCES"
+                            },
+                            {
+                                "name": "CA_NO_ACCESS"
+                            },
+                            {
+                                "name": "CA_NO_CARD_INSERTED"
+                            },
+                            {
+                                "name": "VOD_NO_CARD_INSERTED"
+                            },
+                            {
+                                "name": "CA_CARD_INSERTED"
+                            },
+                            {
+                                "name": "CA_COMMUNICATION_FAILED"
+                            },
+                            {
+                                "name": "DB_PARENTAL_BLOCK"
+                            },
+                            {
+                                "name": "CHANNEL_LOCK"
+                            },
+                            {
+                                "name": "TIMESHIFT_ENTERED_PAUSED"
+                            },
+                            {
+                                "name": "TIMESHIFT_ENTERED_REWINDING"
+                            },
+                            {
+                                "name": "TIMESHIFT_ENTERED_PLAYING"
+                            },
+                            {
+                                "name": "TIMESHIFT_LEFT"
+                            },
+                            {
+                                "name": "PVR_SERVICE_CHANGED"
+                            },
+                            {
+                                "name": "IDLE_STB"
+                            },
+                            {
+                                "name": "NO_ACCESS"
+                            },
+                            {
+                                "name": "AV_ERROR"
+                            },
+                            {
+                                "name": "AV_OK"
+                            },
+                            {
+                                "name": "FAILED"
+                            },
+                            {
+                                "name": "ERICSSON_VOD_FAILED"
+                            },
+                            {
+                                "name": "ERICSSON_VOD_SERVICE_NOT_DISCOVERED"
+                            },
+                            {
+                                "name": "FASTFORWARDING"
+                            },
+                            {
+                                "name": "REWINDING"
+                            },
+                            {
+                                "name": "PAUSED"
+                            },
+                            {
+                                "name": "STOPPED"
+                            },
+                            {
+                                "name": "SEEK"
+                            },
+                            {
+                                "name": "SEEK_DONE"
+                            },
+                            {
+                                "name": "HDCP_FAIL"
+                            },
+                            {
+                                "name": "HDCP_OK"
+                            },
+                            {
+                                "name": "RECEIVER_LOCKED"
+                            },
+                            {
+                                "name": "NO_ERROR"
+                            },
+                            {
+                                "name": "PLAYER_CONFIGURATION"
+                            },
+                            {
+                                "name": "PLAYER_READY"
+                            },
+                            {
+                                "name": "PLAYER_PLAYING"
+                            },
+                            {
+                                "name": "RECORDING_USER_LOCKED"
+                            },
+                            {
+                                "name": "RECORDING_USER_UNLOCKED"
+                            },
+                            {
+                                "name": "TIMER_WENT_OFF"
+                            },
+                            {
+                                "name": "APPLICATION_START"
+                            },
+                            {
+                                "name": "NETFLIX_NO_ESN"
+                            },
+                            {
+                                "name": "RTSP_TEARDOWN"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "STANDBY_ACTIVE",
+                        "transitions": [
+                            {
+                                "event": "STANDBY_PASSIVE_ENTERING",
+                                "target": "STANDBY_PASSIVE"
+                            }
+                        ],
+                        "events": [
+                            {
+                                "name": "SELECTION_PREPARED"
+                            },
+                            {
+                                "name": "SERVICE_SELECTING"
+                            },
+                            {
+                                "name": "SERVICE_SELECTED"
+                            },
+                            {
+                                "name": "SERVICE_CONTEXT_STOPPED"
+                            },
+                            {
+                                "name": "SELECTION_FAILED"
+                            },
+                            {
+                                "name": "STANDBY_ACTIVE_ENTERING"
+                            },
+                            {
+                                "name": "STANDBY_PASSIVE_ENTERING"
+                            },
+                            {
+                                "name": "TUNER_NO_SIGNAL"
+                            },
+                            {
+                                "name": "LACK_OF_RESOURCES"
+                            },
+                            {
+                                "name": "CA_NO_ACCESS"
+                            },
+                            {
+                                "name": "CA_NO_CARD_INSERTED"
+                            },
+                            {
+                                "name": "VOD_NO_CARD_INSERTED"
+                            },
+                            {
+                                "name": "CA_CARD_INSERTED"
+                            },
+                            {
+                                "name": "CA_COMMUNICATION_FAILED"
+                            },
+                            {
+                                "name": "DB_PARENTAL_BLOCK"
+                            },
+                            {
+                                "name": "CHANNEL_LOCK"
+                            },
+                            {
+                                "name": "TIMESHIFT_ENTERED_PAUSED"
+                            },
+                            {
+                                "name": "TIMESHIFT_ENTERED_REWINDING"
+                            },
+                            {
+                                "name": "TIMESHIFT_ENTERED_PLAYING"
+                            },
+                            {
+                                "name": "TIMESHIFT_LEFT"
+                            },
+                            {
+                                "name": "PVR_SERVICE_CHANGED"
+                            },
+                            {
+                                "name": "IDLE_STB"
+                            },
+                            {
+                                "name": "NO_ACCESS"
+                            },
+                            {
+                                "name": "AV_ERROR"
+                            },
+                            {
+                                "name": "AV_OK"
+                            },
+                            {
+                                "name": "FAILED"
+                            },
+                            {
+                                "name": "ERICSSON_VOD_FAILED"
+                            },
+                            {
+                                "name": "ERICSSON_VOD_SERVICE_NOT_DISCOVERED"
+                            },
+                            {
+                                "name": "FASTFORWARDING"
+                            },
+                            {
+                                "name": "REWINDING"
+                            },
+                            {
+                                "name": "PAUSED"
+                            },
+                            {
+                                "name": "STOPPED"
+                            },
+                            {
+                                "name": "SEEK"
+                            },
+                            {
+                                "name": "SEEK_DONE"
+                            },
+                            {
+                                "name": "HDCP_FAIL"
+                            },
+                            {
+                                "name": "HDCP_OK"
+                            },
+                            {
+                                "name": "RECEIVER_LOCKED"
+                            },
+                            {
+                                "name": "NO_ERROR"
+                            },
+                            {
+                                "name": "PLAYER_CONFIGURATION"
+                            },
+                            {
+                                "name": "PLAYER_READY"
+                            },
+                            {
+                                "name": "PLAYER_PLAYING"
+                            },
+                            {
+                                "name": "RECORDING_USER_LOCKED"
+                            },
+                            {
+                                "name": "RECORDING_USER_UNLOCKED"
+                            },
+                            {
+                                "name": "TIMER_WENT_OFF"
+                            },
+                            {
+                                "name": "APPLICATION_START"
+                            },
+                            {
+                                "name": "NETFLIX_NO_ESN"
+                            },
+                            {
+                                "name": "RTSP_TEARDOWN"
+                            }
+                        ]
+                    }
+                ],
+                "name": "STANDBY",
+                "transitions": [
+                    {
+                        "event": "SERVICE_SELECTING",
+                        "target": "LIVE_SERVICE_SELECTING"
+                    },
+                    {
+                        "event": "OPERATIONAL",
+                        "target": "OPERATE"
+                    }
+                ]
+            }
+        ],
+        "name": "ROOT",
+        "transitions": [
+            {
+                "event": "LIVE_ENTERING",
+                "target": "LIVE"
+            },
+            {
+                "event": "STANDBY_ACTIVE_ENTERING",
+                "target": "STANDBY_ACTIVE"
+            }
+        ]
+    }
+]
